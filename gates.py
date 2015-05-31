@@ -20,7 +20,7 @@ class Device(Sprite):
 
     def draw(self):
         """ Draw device icon """
-        self.simulator.vis.screen .blit(self.icon, self.rects['icon_rect'])
+        self.simulator.vis.screen.blit(self.icon, self.rects['icon_rect'])
         pygame.display.flip()
         self.update()
 
