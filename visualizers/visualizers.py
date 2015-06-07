@@ -1,8 +1,6 @@
 """ Module with class Visualizer"""
 import pygame
 import os, inspect, sys
-sys.path.append('..')
-
 CMD_FOLDER = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(\
                               inspect.currentframe()))[0]))
 if CMD_FOLDER not in sys.path:

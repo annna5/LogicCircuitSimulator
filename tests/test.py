@@ -1,11 +1,11 @@
 """ Module containing unit tests """
 import unittest
 import sys
-sys.path.append('..')
-from LogicCircuitSimulator.main.main import Main
-from LogicCircuitSimulator.main.simulator import Simulator
-from LogicCircuitSimulator.devices.gates import GateAnd, Switch, GateOr,\
-               GateNand, GateNor, GateXor, GateBuffor, GateNot, Bulb, Knot
+sys.path.append('..')     
+from main.main import Main                           
+from main.simulator import Simulator                           
+from devices.gates import GateAnd, Switch, GateOr, GateNand, GateNor,\
+                          GateXor, GateBuffor, GateNot, Bulb, Knot
 
 class TestGates(unittest.TestCase):
     """ class with unittest methods """

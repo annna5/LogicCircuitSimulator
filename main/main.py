@@ -1,9 +1,6 @@
 """ Module with main loop """
 import pygame
-import sys
-sys.path.append('..')
-
-from LogicCircuitSimulator.main.simulator import Simulator
+from simulator import Simulator
 
 class Main(object):
     """ class with main loop """

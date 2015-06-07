@@ -1,11 +1,13 @@
 """ Module with Simulator class """
 import pygame
-import sys
-sys.path.append('..')
-
-from LogicCircuitSimulator.visualizers.visualizers import Visualizer
-from LogicCircuitSimulator.devices.wires import Wire
-from LogicCircuitSimulator.devices.gates import  GateAnd, GateOr, GateNand,\
+import os, inspect, sys
+CMD_FOLDER = os.path.realpath(os.path.abspath(os.path.split\
+                       (inspect.getfile(inspect.currentframe()))[0]))
+if CMD_FOLDER not in sys.path:
+    sys.path.insert(0, CMD_FOLDER)
+from visualizers.visualizers import Visualizer
+from devices.wires import Wire
+from devices.gates import  GateAnd, GateOr, GateNand,\
                GateNor, GateBuffor, GateNot, GateXor, Bulb, Switch, Knot
 class Simulator(object):
     """ class with event handling methods """
