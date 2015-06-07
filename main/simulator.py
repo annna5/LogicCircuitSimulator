@@ -8,10 +8,9 @@ if CMD_FOLDER not in sys.path:
     sys.path.insert(0, CMD_FOLDER)
 
 from visualizers.visualizers import Visualizer
-from devices.user_functions import UserFunction
 from devices.wires import Wire
 from devices.gates import  GateAnd, GateOr, GateNand, GateNor, GateBuffor,\
-                           GateNot, GateXor, Bulb, Switch, Knot
+                           GateNot, GateXor, Bulb, Switch, Knot, UserFunction
 class Simulator(object):
     """ class with event handling methods """
     CLEAR, GATE_SELECTED, WIRE_STARTED = range(3)
@@ -267,44 +266,30 @@ class Simulator(object):
             return dev
         return None
 
+    def handle_f_button(self, number):
+        """ f_button clicked """
+        if self.cur_wire_state == self.CLEAR: #kursor pusty
+            if len(self.main.user_simulators) > number:
+                userfun = UserFunction(self, number)
+                self.devices['new_functions'].add(userfun)
+                self.tmp_devices['current_device'] = userfun
+                self.cur_wire_state = self.GATE_SELECTED
+                self.tmp_devices['current_device'].add_to_group()
+
     def f_buttons_event(self, pos):
         """ f_button clicked """
         if self.panels['f1_button'].collidepoint(pos) and\
                           self.vis.draw_st_panel == False:
-            if self.cur_wire_state == self.CLEAR: #kursor pusty
-                if len(self.main.user_simulators) > 0:
-                    userfun = UserFunction(self, 0)
-                    self.devices['new_functions'].add(userfun)
-                    self.tmp_devices['current_device'] = userfun
-                    self.cur_wire_state = self.GATE_SELECTED
-                    self.tmp_devices['current_device'].add_to_group()
+            self.handle_f_button(0)
         elif self.panels['f2_button'].collidepoint(pos) and\
                     self.vis.draw_st_panel == False:
-            if self.cur_wire_state == self.CLEAR: #kursor pusty
-                if len(self.main.user_simulators) > 1:
-                    userfun = UserFunction(self, 1)
-                    self.devices['new_functions'].add(userfun)
-                    self.tmp_devices['current_device'] = userfun
-                    self.cur_wire_state = self.GATE_SELECTED
-                    self.tmp_devices['current_device'].add_to_group()
+            self.handle_f_button(1)
         elif self.panels['f3_button'].collidepoint(pos)\
                           and self.vis.draw_st_panel == False:
-            if self.cur_wire_state == self.CLEAR: #kursor pusty
-                if len(self.main.user_simulators) > 2:
-                    userfun = UserFunction(self, 2)
-                    self.devices['new_functions'].add(userfun)
-                    self.tmp_devices['current_device'] = userfun
-                    self.cur_wire_state = self.GATE_SELECTED
-                    self.tmp_devices['current_device'].add_to_group()
+            self.handle_f_button(2)
         elif self.panels['f4_button'].collidepoint(pos) and\
                           self.vis.draw_st_panel == False:
-            if self.cur_wire_state == self.CLEAR: #kursor pusty
-                if len(self.main.user_simulators) > 3:
-                    userfun = UserFunction(self, 3)
-                    self.devices['new_functions'].add(userfun)
-                    self.tmp_devices['current_device'] = userfun
-                    self.cur_wire_state = self.GATE_SELECTED
-                    self.tmp_devices['current_device'].add_to_group()
+            self.handle_f_button(3)
 
     def buttons_event(self, pos):
         """ button clicked """

@@ -46,8 +46,8 @@ class Visualizer(object):
           'main_panel' : main_panel,\
           'inside_main_panel' : inside_main_panel,\
           'start_panel': pygame.Rect(
-                             left_panel_width + self.V_MARGIN * 2,\
-                             self.H_MARGIN, main_panel_width, main_panel_height),\
+                           left_panel_width + self.V_MARGIN * 2,\
+                           self.H_MARGIN, main_panel_width, main_panel_height),\
           'help_button': pygame.Rect(
                              self.SCREEN_W - self.V_MARGIN - self.BUTTON_W,\
                              self.H_MARGIN, self.BUTTON_W, self.BUTTON_H),\
@@ -81,20 +81,20 @@ class Visualizer(object):
                              self.BUTTON_H),\
 
           'f2_button' : pygame.Rect(
-                             self.SCREEN_W - self.V_MARGIN -\
-                             self.BUTTON_W/2 + self.SPACE/2,\
-                             self.H_MARGIN + 2 * self.BUTTON_H + 2 * self.SPACE,\
-                             self.BUTTON_W/2 - self.SPACE/2,\
-                             self.BUTTON_H),\
+                            self.SCREEN_W - self.V_MARGIN -\
+                            self.BUTTON_W/2 + self.SPACE/2,\
+                            self.H_MARGIN + 2 * self.BUTTON_H + 2 * self.SPACE,\
+                            self.BUTTON_W/2 - self.SPACE/2,\
+                            self.BUTTON_H),\
           'f3_button' : pygame.Rect(
-                             self.SCREEN_W - self.V_MARGIN - self.BUTTON_W,\
-                             self.H_MARGIN + 3 * self.BUTTON_H + 3 * self.SPACE,\
-                             self.BUTTON_W/2 - self.SPACE/2, self.BUTTON_H),\
+                            self.SCREEN_W - self.V_MARGIN - self.BUTTON_W,\
+                            self.H_MARGIN + 3 * self.BUTTON_H + 3 * self.SPACE,\
+                            self.BUTTON_W/2 - self.SPACE/2, self.BUTTON_H),\
           'f4_button' : pygame.Rect(
-                             self.SCREEN_W - self.V_MARGIN - self.BUTTON_W/2 +\
-                             self.SPACE/2,\
-                             self.H_MARGIN + 3 * self.BUTTON_H + 3 * self.SPACE,\
-                             self.BUTTON_W/2 - self.SPACE/2, self.BUTTON_H)}
+                            self.SCREEN_W - self.V_MARGIN - self.BUTTON_W/2 +\
+                            self.SPACE/2,\
+                            self.H_MARGIN + 3 * self.BUTTON_H + 3 * self.SPACE,\
+                            self.BUTTON_W/2 - self.SPACE/2, self.BUTTON_H)}
         self.images = []
         for i in range(len(self.ICONS)):
             icon = pygame.image.load(os.path.join(CMD_FOLDER,\
@@ -131,40 +131,24 @@ class Visualizer(object):
         pygame.draw.rect(self.screen, self.GRAY3,\
                          self.simulator.panels['main_panel'], 4)
 
+    def draw_button(self, name):
+        """ draw button """
+        pygame.draw.rect(self.screen, self.GRAY2,\
+                         self.simulator.panels[name])
+        pygame.draw.rect(self.screen, self.GRAY3,\
+                         self.simulator.panels[name], 4)
+
     def draw_buttons(self):
         """ Draws buttons """
-        pygame.draw.rect(self.screen, self.GRAY2,\
-                         self.simulator.panels['clear_button'])
-        pygame.draw.rect(self.screen, self.GRAY3,\
-                         self.simulator.panels['clear_button'], 4)
-        pygame.draw.rect(self.screen, self.GRAY2,\
-                         self.simulator.panels['print_button'])
-        pygame.draw.rect(self.screen, self.GRAY3,\
-                         self.simulator.panels['print_button'], 4)
-        pygame.draw.rect(self.screen, self.GRAY2,\
-                         self.simulator.panels['help_button'])
-        pygame.draw.rect(self.screen, self.GRAY3,\
-                         self.simulator.panels['help_button'], 4)
-        pygame.draw.rect(self.screen, self.GRAY2,\
-                         self.simulator.panels['save_button'])
-        pygame.draw.rect(self.screen, self.GRAY3,\
-                         self.simulator.panels['save_button'], 4)
-        pygame.draw.rect(self.screen, self.GRAY2,\
-                         self.simulator.panels['f1_button'])
-        pygame.draw.rect(self.screen, self.GRAY3,\
-                         self.simulator.panels['f1_button'], 4)
-        pygame.draw.rect(self.screen, self.GRAY2,\
-                         self.simulator.panels['f2_button'])
-        pygame.draw.rect(self.screen, self.GRAY3,\
-                         self.simulator.panels['f2_button'], 4)
-        pygame.draw.rect(self.screen, self.GRAY2,\
-                         self.simulator.panels['f3_button'])
-        pygame.draw.rect(self.screen, self.GRAY3,\
-                         self.simulator.panels['f3_button'], 4)
-        pygame.draw.rect(self.screen, self.GRAY2,\
-                         self.simulator.panels['f4_button'])
-        pygame.draw.rect(self.screen, self.GRAY3,\
-                         self.simulator.panels['f4_button'], 4)
+        self.draw_button('clear_button')
+        self.draw_button('print_button')
+        self.draw_button('help_button')
+        self.draw_button('save_button')
+        self.draw_button('f1_button')
+        self.draw_button('f2_button')
+        self.draw_button('f3_button')
+        self.draw_button('f4_button')
+
         myfont = pygame.font.SysFont("monospace", 30)
         myfont.set_bold(True)
 
