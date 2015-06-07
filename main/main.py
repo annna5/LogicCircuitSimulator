@@ -6,6 +6,7 @@ class Main(object):
     """ class with main loop """
     def __init__(self):
         self.sim = Simulator(self)
+        self.user_simulators = []
     def run(self):
         """ Main loop """
         while self.sim.running:
@@ -14,7 +15,6 @@ class Main(object):
             self.center_icon()
             self.sim.vis.draw_background()
             pygame.display.flip()
-
         pygame.quit()
 
     def center_icon(self):

@@ -42,7 +42,7 @@ class Gate(Device):
     """ Class represents all gates types """
     def __init__(self, simulator):
         Device.__init__(self, simulator)
-        self.inputs_max = 2
+        self.inputs_max = 2    # poza not
         self.inputs = []
         self.outputs = []
 

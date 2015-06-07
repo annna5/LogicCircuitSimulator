@@ -1,9 +1,9 @@
 """ Module containing unit tests """
 import unittest
 import sys
-sys.path.append('..')     
-from main.main import Main                           
-from main.simulator import Simulator                           
+sys.path.append('..')
+from main.main import Main
+from main.simulator import Simulator
 from devices.gates import GateAnd, Switch, GateOr, GateNand, GateNor,\
                           GateXor, GateBuffor, GateNot, Bulb, Knot
 
@@ -185,4 +185,3 @@ class TestGates(unittest.TestCase):
 
 TEST = unittest.TestLoader().loadTestsFromTestCase(TestGates)
 print unittest.TextTestRunner(verbosity=True).run(TEST)
-

@@ -1,7 +1,5 @@
 """ Module with class Wire """
 import pygame
-import sys
-sys.path.append('..')
 
 class Wire(object):
     """ Class represents wire object """
