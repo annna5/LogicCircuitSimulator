@@ -12,7 +12,7 @@ class Simulator(object):
     CLEAR, GATE_SELECTED, WIRE_STARTED = range(3)
 
     def __init__(self, main):
-        pygame.init() #inicjalizuje moduly
+        pygame.init()
         self.main = main
         self.running = True
         self.panels = {}
@@ -38,9 +38,7 @@ class Simulator(object):
                 self.choose_device_event(event.pos)
             elif self.panels['start_button'].collidepoint(event.pos) and\
                            self.vis.draw_st_panel == True:
-                #if self.cur_wire_state == self.CLEAR: #kursor pusty
                 self.vis.draw_st_panel = False
-                print 'start panel'
             elif self.panels['inside_main_panel'].collidepoint(event.pos)\
                               and self.vis.draw_st_panel == False:
                 self.inside_main_panel_event(event.pos)
@@ -93,7 +91,6 @@ class Simulator(object):
             pygame.sprite.spritecollideany(\
                 self.tmp_devices['current_device'], self.devices['switches'])\
                 in [None, self.tmp_devices['current_device']]):
-            print "no collision"
             self.vis.screen.blit(self.tmp_devices['current_device'].icon,\
                                 (pos_x - self.vis.ICON_W / 2,\
                                  pos_y - self.vis.ICON_H / 2))
@@ -101,7 +98,6 @@ class Simulator(object):
             self.tmp_devices['current_device'].add_to_group()
             self.tmp_devices['current_device'] = None
         else:
-            print "collision found"
             self.tmp_devices['current_device'] = None
 
         self.cur_wire_state = self.CLEAR
@@ -160,7 +156,6 @@ class Simulator(object):
             end_device = device_clicked
             wire = Wire(self.tmp_devices['start_device'], end_device)
             self.devices['wires'].append(wire)
-            print len(self.devices['wires'])
             self.cur_wire_state = self.CLEAR #kursor wolny
 
     def choose_device_to_remove(self, pos):
@@ -188,7 +183,6 @@ class Simulator(object):
         """ Right-click to remove device from panel """
         device_clicked = self.choose_device_to_remove(pos)
         if device_clicked != None:
-            print 'wires:', len(device_clicked.wires['wires'])
             for wire in device_clicked.wires['wires']:
                 if wire in self.devices['wires']:
                     self.devices['wires'].remove(wire)
@@ -207,7 +201,6 @@ class Simulator(object):
 
             device_clicked.wires['wires'] = []
             device_clicked.wires['wires_started'] = []
-            print len(self.devices['wires'])
 
     def which_device_choosen(self, pos):
         """ Find out which device has been cliked on the left panel """
