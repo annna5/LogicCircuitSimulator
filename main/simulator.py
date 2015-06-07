@@ -1,28 +1,29 @@
-""" Module with Game class """
+""" Module with Simulator class """
 import pygame
-from devices.wires import Wire
-from devices.gates import  GateAnd, GateOr, GateNand, GateNor, GateBuffor, GateNot, GateXor, Bulb, Switch, Knot
-import os, inspect, sys
+import sys
+sys.path.append('..')
 
-cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
-if cmd_folder not in sys.path:
-    sys.path.insert(0, cmd_folder)
-
-from visualizers.visualizers import Visualizer
-
+from LogicCircuitSimulator.visualizers.visualizers import Visualizer
+from LogicCircuitSimulator.devices.wires import Wire
+from LogicCircuitSimulator.devices.gates import  GateAnd, GateOr, GateNand,\
+               GateNor, GateBuffor, GateNot, GateXor, Bulb, Switch, Knot
 class Simulator(object):
-    """ Game class with main loop and event handling methods """
+    """ class with event handling methods """
     CLEAR, GATE_SELECTED, WIRE_STARTED = range(3)
 
-    def __init__(self):
+    def __init__(self, main):
         pygame.init() #inicjalizuje moduly
+        self.main = main
         self.running = True
         self.panels = {}
         self.vis = Visualizer(self)
-        self.devices = {'gates' : pygame.sprite.Group(), 'switches' : pygame.sprite.Group(),\
+        self.devices = {'gates' : pygame.sprite.Group(),\
+                        'switches' : pygame.sprite.Group(),\
                         'bulbs' : pygame.sprite.Group(), 'wires' : []}
-        self.current_device = None
-        self.start_device = None
+        current_device = None
+        start_device = None
+        self.tmp_devices = {'current_device' : current_device,\
+                            'start_device' : start_device}
         self.cur_wire_state = self.CLEAR
         pygame.display.flip()
 
@@ -30,44 +31,39 @@ class Simulator(object):
         """ Events handling method """
         if event.type == pygame.QUIT:
             self.running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-            if self.panels['devices_panel'].collidepoint(event.pos) and self.vis.draw_st_panel == False:
+        elif event.type == pygame.MOUSEBUTTONDOWN and\
+                           pygame.mouse.get_pressed()[0]:
+            if self.panels['devices_panel'].collidepoint(event.pos) and\
+                           self.vis.draw_st_panel == False:
                 self.choose_device_event(event.pos)
-            elif self.panels['start_button'].collidepoint(event.pos) and self.vis.draw_st_panel == True:
+            elif self.panels['start_button'].collidepoint(event.pos) and\
+                           self.vis.draw_st_panel == True:
                 #if self.cur_wire_state == self.CLEAR: #kursor pusty
                 self.vis.draw_st_panel = False
                 print 'start panel'
-            elif self.panels['inside_main_panel'].collidepoint(event.pos) and self.vis.draw_st_panel == False:
+            elif self.panels['inside_main_panel'].collidepoint(event.pos)\
+                              and self.vis.draw_st_panel == False:
                 self.inside_main_panel_event(event.pos)
-            elif self.panels['help_button'].collidepoint(event.pos) and self.vis.draw_st_panel == False:
-                if self.cur_wire_state == self.CLEAR: #kursor pusty
-                    self.vis.draw_st_panel = True
-            elif self.panels['print_button'].collidepoint(event.pos) and self.vis.draw_st_panel == False:
-                if self.cur_wire_state == self.CLEAR: #kursor pusty
-                    panel = self.panels['main_panel']
-                    image = "screen1.jpeg"
-                    pygame.image.save(self.vis.screen.subsurface(panel), image)
-            elif self.panels['clear_button'].collidepoint(event.pos) and self.vis.draw_st_panel == False:
-                if self.cur_wire_state == self.CLEAR: #kursor pusty
-                    self.devices['gates'] = pygame.sprite.Group()
-                    self.devices['switches'] = pygame.sprite.Group()
-                    self.devices['bulbs'] = pygame.sprite.Group()
-                    self.devices['wires'] = []
-                    self.current_device = None
-                    self.cur_wire_state = self.CLEAR
-                print 'clear button'
-        elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[2] and self.vis.draw_st_panel == False:
+            elif (self.panels['help_button'].collidepoint(event.pos) or\
+                 self.panels['print_button'].collidepoint(event.pos) or\
+                 self.panels['clear_button'].collidepoint(event.pos)) and\
+                 self.vis.draw_st_panel == False:
+                self.buttons_event(event.pos)
+
+        elif event.type == pygame.MOUSEBUTTONDOWN and\
+                           pygame.mouse.get_pressed()[2]\
+                               and self.vis.draw_st_panel == False:
             self.remove_event(event.pos)
 
     def choose_device_event(self, pos):
         """ Left panel clicked """
         if self.cur_wire_state == self.CLEAR: #nic nie bylo na kursorze
-            self.current_device = self.which_device_choosen(pos)
+            self.tmp_devices['current_device'] = self.which_device_choosen(pos)
             self.cur_wire_state = self.GATE_SELECTED #bramka na kursorze
         else:
-            if self.current_device != None:
-                self.current_device.remove_from_group()
-            self.current_device = None
+            if self.tmp_devices['current_device'] != None:
+                self.tmp_devices['current_device'].remove_from_group()
+            self.tmp_devices['current_device'] = None
             self.cur_wire_state = self.CLEAR
 
     def inside_main_panel_event(self, pos):
@@ -80,35 +76,43 @@ class Simulator(object):
             self.wire_started_event(pos)
 
     def place_device_event(self, pos):
-        """ Device is attached to the cursor, choose place on main panel to place it """
+        """ Device is attached to the cursor,
+            choose place on main panel to place it """
         pos_x, pos_y = pos
-        self.current_device.remove_from_group() #usuwam tymczasowo
-        self.current_device.rect.topleft = (pos_x - self.vis.ICON_W / 2, pos_y - self.vis.ICON_H / 2)
+        self.tmp_devices['current_device'].remove_from_group()
+        self.tmp_devices['current_device'].rect.topleft =\
+                                          (pos_x - self.vis.ICON_W / 2,\
+                                           pos_y - self.vis.ICON_H / 2)
 
-        if (pygame.sprite.spritecollideany(self.current_device, self.devices['gates']) in [None, self.current_device] and\
-        pygame.sprite.spritecollideany(self.current_device, self.devices['bulbs']) in [None, self.current_device] and\
-        pygame.sprite.spritecollideany(self.current_device, self.devices['switches']) in [None, self.current_device]):
+        if (pygame.sprite.spritecollideany(\
+                self.tmp_devices['current_device'], self.devices['gates'])\
+                in [None, self.tmp_devices['current_device']] and\
+            pygame.sprite.spritecollideany(\
+                self.tmp_devices['current_device'], self.devices['bulbs'])\
+                in [None, self.tmp_devices['current_device']] and\
+            pygame.sprite.spritecollideany(\
+                self.tmp_devices['current_device'], self.devices['switches'])\
+                in [None, self.tmp_devices['current_device']]):
             print "no collision"
-            self.vis.screen.blit(self.current_device.icon, (pos_x - self.vis.ICON_W / 2, pos_y - self.vis.ICON_H / 2))
+            self.vis.screen.blit(self.tmp_devices['current_device'].icon,\
+                                (pos_x - self.vis.ICON_W / 2,\
+                                 pos_y - self.vis.ICON_H / 2))
             pygame.display.flip()
-            self.current_device.add_to_group() #dodaje z powrotem
-            self.current_device = None
+            self.tmp_devices['current_device'].add_to_group()
+            self.tmp_devices['current_device'] = None
         else:
             print "collision found"
-            self.current_device = None
+            self.tmp_devices['current_device'] = None
 
         self.cur_wire_state = self.CLEAR
 
     def main_panel_device_clicked_event(self, pos):
         """ Click on deivce from main panel to start wire or change state """
         pos_x, pos_y = pos
-        self.start_device = None
+        self.tmp_devices['start_device'] = None
         for gate in self.devices['gates']:
-            if gate.rects['move_rect'].collidepoint((pos_x, pos_y)):
-                pass
-                #gate.set_position(pos_x, pos_y)
-            elif gate.rect.collidepoint((pos_x, pos_y)):
-                self.start_device = gate
+            if gate.rect.collidepoint((pos_x, pos_y)):
+                self.tmp_devices['start_device'] = gate
                 break
 
         for switch in self.devices['switches']:
@@ -121,10 +125,10 @@ class Simulator(object):
                         switch.state = 0
                         switch.icon = switch.icon0
                 else:
-                    self.start_device = switch
+                    self.tmp_devices['start_device'] = switch
                 break
 
-        if self.start_device != None:
+        if self.tmp_devices['start_device'] != None:
             self.cur_wire_state = self.WIRE_STARTED
 
     def wire_started_event(self, pos):
@@ -132,11 +136,12 @@ class Simulator(object):
         pos_x, pos_y = pos
         device_clicked = None
         for gate in self.devices['gates']:
-            if gate.rect.collidepoint((pos_x, pos_y)) and len(gate.inputs) < gate.inputs_max:
-                if gate != self.start_device:
+            if gate.rect.collidepoint((pos_x, pos_y)) and\
+                   len(gate.inputs) < gate.inputs_max:
+                if gate != self.tmp_devices['start_device']:
                     device_clicked = gate
-                    gate.inputs.append(self.start_device)
-                    self.start_device.outputs.append(gate)
+                    gate.inputs.append(self.tmp_devices['start_device'])
+                    self.tmp_devices['start_device'].outputs.append(gate)
                     break
                 else:
                     self.cur_wire_state = self.CLEAR
@@ -144,21 +149,22 @@ class Simulator(object):
                     return
 
         for bulb in self.devices['bulbs']:
-            if bulb.rect.collidepoint((pos_x, pos_y)) and len(bulb.inputs) < bulb.inputs_max:
+            if bulb.rect.collidepoint((pos_x, pos_y)) and\
+                 len(bulb.inputs) < bulb.inputs_max:
                 device_clicked = bulb
-                bulb.inputs.append(self.start_device)
-                self.start_device.outputs.append(bulb)
+                bulb.inputs.append(self.tmp_devices['start_device'])
+                self.tmp_devices['start_device'].outputs.append(bulb)
                 break
 
         if device_clicked != None:
             end_device = device_clicked
-            wire = Wire(self.start_device, end_device)
+            wire = Wire(self.tmp_devices['start_device'], end_device)
             self.devices['wires'].append(wire)
             print len(self.devices['wires'])
             self.cur_wire_state = self.CLEAR #kursor wolny
 
-    def remove_event(self, pos):
-        """ Right-click to remove device from panel """
+    def choose_device_to_remove(self, pos):
+        """ which device was right-clicked """
         pos_x, pos_y = pos
         device_clicked = None
         for gate in self.devices['gates']:
@@ -166,19 +172,21 @@ class Simulator(object):
                 device_clicked = gate
                 self.devices['gates'].remove(device_clicked)
                 break
-
         for switch in self.devices['switches']:
             if switch.rect.collidepoint((pos_x, pos_y)):
                 device_clicked = switch
                 self.devices['switches'].remove(device_clicked)
                 break
-
         for bulb in self.devices['bulbs']:
             if bulb.rect.collidepoint((pos_x, pos_y)):
                 device_clicked = bulb
                 self.devices['bulbs'].remove(device_clicked)
                 break
+        return device_clicked
 
+    def remove_event(self, pos):
+        """ Right-click to remove device from panel """
+        device_clicked = self.choose_device_to_remove(pos)
         if device_clicked != None:
             print 'wires:', len(device_clicked.wires['wires'])
             for wire in device_clicked.wires['wires']:
@@ -214,7 +222,7 @@ class Simulator(object):
             elif pos_y < self.panels['devices_panel'].top + self.vis.ICON_H * 4:
                 dev = GateNor(self)
             elif pos_y < self.panels['devices_panel'].top + self.vis.ICON_H * 5:
-                dev = GateBuffor(self)    
+                dev = GateBuffor(self)
             elif pos_y < self.panels['devices_panel'].top + self.vis.ICON_H * 6:
                 dev = GateNot(self)
             elif pos_y < self.panels['devices_panel'].top + self.vis.ICON_H * 7:
@@ -222,22 +230,33 @@ class Simulator(object):
             elif pos_y < self.panels['devices_panel'].top + self.vis.ICON_H * 8:
                 dev = Switch(self)
             elif pos_y < self.panels['devices_panel'].top + self.vis.ICON_H * 9:
-                dev = Bulb(self)    
+                dev = Bulb(self)
             else:
                 dev = Knot(self)
             dev.add_to_group()
             return dev
         return None
 
-    def run(self):
-        """ Main loop """
-        while self.running:
-            for event in pygame.event.get():
-                self.on_event(event)
-            pos_x, pos_y = pygame.mouse.get_pos()
-            if self.current_device != None:
-                self.current_device.rects['icon_rect'] = (pos_x - self.vis.ICON_W / 2, pos_y - self.vis.ICON_H / 2)
-            self.vis.draw_background()
-            pygame.display.flip()
+    def buttons_event(self, pos):
+        """ button clicked """
+        if self.panels['help_button'].collidepoint(pos) and\
+                          self.vis.draw_st_panel == False:
+            if self.cur_wire_state == self.CLEAR: #kursor pusty
+                self.vis.draw_st_panel = True
+        elif self.panels['print_button'].collidepoint(pos) and\
+                          self.vis.draw_st_panel == False:
+            if self.cur_wire_state == self.CLEAR: #kursor pusty
+                panel = self.panels['main_panel']
+                image = "screen1.jpeg"
+                pygame.image.save(self.vis.screen.subsurface(panel), image)
+        elif self.panels['clear_button'].collidepoint(pos) and\
+                          self.vis.draw_st_panel == False:
+            if self.cur_wire_state == self.CLEAR: #kursor pusty
+                self.devices['gates'] = pygame.sprite.Group()
+                self.devices['switches'] = pygame.sprite.Group()
+                self.devices['bulbs'] = pygame.sprite.Group()
+                self.devices['wires'] = []
+                self.tmp_devices['current_device'] = None
+                self.cur_wire_state = self.CLEAR
 
-        pygame.quit()
+

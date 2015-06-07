@@ -1,10 +1,11 @@
-""" Modeule contains all Devices types """
+""" Module contains all Devices types """
 import pygame
 import os, inspect, sys
 from pygame.sprite import Sprite
-cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
-if cmd_folder not in sys.path:
-    sys.path.insert(0, cmd_folder)	
+CMD_FOLDER = os.path.realpath(os.path.abspath(os.path.split(\
+                inspect.getfile(inspect.currentframe()))[0]))
+if CMD_FOLDER not in sys.path:
+    sys.path.insert(0, CMD_FOLDER)
 class Device(Sprite):
     """ Parent device class """
     ICON_W, ICON_H = 100, 63
@@ -16,7 +17,8 @@ class Device(Sprite):
         wires = []
         wires_ended = []
         wires_started = []
-        self.wires = {'wires' : wires, 'wires_ended' :wires_ended, 'wires_started' :wires_started}
+        self.wires = {'wires' : wires, 'wires_ended' :wires_ended,\
+                      'wires_started' :wires_started}
         self.rects = {'icon_rect' : None, 'move_rect' : None}
         self.icon = None
         self.rect = None
@@ -29,10 +31,12 @@ class Device(Sprite):
 
     def icon_init(self, name):
         """ Initialize device icon """
-        self.icon = pygame.image.load(os.path.join(os.path.dirname(cmd_folder), "visualizers/icons/"+name+".jpg")).convert()
+        self.icon = pygame.image.load(os.path.join(os.path.dirname(CMD_FOLDER),\
+                    "visualizers/icons/"+name+".jpg")).convert()
         self.rects['icon_rect'] = self.icon.get_rect()
         self.rect = self.rects['icon_rect']
-        self.rects['move_rect'] = pygame.Rect(self.rect.left, self.rect.top, 15, 15)
+        self.rects['move_rect'] = pygame.Rect(self.rect.left,\
+                                              self.rect.top, 15, 15)
 
 class Gate(Device):
     """ Class represents all gates types """
@@ -120,7 +124,7 @@ class GateNot(Gate):
 
     def wire_end_pos(self):
         return [(self.rect.left, int(self.rect.top + self.ICON_H / 2)-1)]
-        
+
 class GateBuffor(Gate):
     """ Buffor """
     def __init__(self, simulator):
@@ -135,7 +139,7 @@ class GateBuffor(Gate):
             self.state = (self.inputs[0].state)
 
     def wire_end_pos(self):
-        return [(self.rect.left, int(self.rect.top + self.ICON_H / 2)-1)]        
+        return [(self.rect.left, int(self.rect.top + self.ICON_H / 2)-1)]
 
 class GateNand(Gate):
     """ Gate represents nand operation """
@@ -187,8 +191,10 @@ class Bulb(Device):
     def __init__(self, simulator):
         Device.__init__(self, simulator)
         self.icon_init("bulb0")
-        self.icon0 = pygame.image.load(os.path.join(os.path.dirname(cmd_folder), "visualizers/icons/bulb0.jpg")).convert()
-        self.icon1 = pygame.image.load(os.path.join(os.path.dirname(cmd_folder), "visualizers/icons/bulb1.jpg")).convert()
+        self.icon0 = pygame.image.load(os.path.join(os.path.dirname(\
+                     CMD_FOLDER), "visualizers/icons/bulb0.jpg")).convert()
+        self.icon1 = pygame.image.load(os.path.join(os.path.dirname(\
+                     CMD_FOLDER), "visualizers/icons/bulb1.jpg")).convert()
         self.inputs = []
         self.inputs_max = 1
 
@@ -229,8 +235,10 @@ class Switch(Device):
     def __init__(self, simulator):
         Device.__init__(self, simulator)
         self.icon_init("switch0")
-        self.icon0 = pygame.image.load(os.path.join(os.path.dirname(cmd_folder), "visualizers/icons/switch0.jpg")).convert()
-        self.icon1 = pygame.image.load(os.path.join(os.path.dirname(cmd_folder), "visualizers/icons/switch1.jpg")).convert()
+        self.icon0 = pygame.image.load(os.path.join(os.path.dirname(\
+                     CMD_FOLDER), "visualizers/icons/switch0.jpg")).convert()
+        self.icon1 = pygame.image.load(os.path.join(os.path.dirname(\
+                     CMD_FOLDER), "visualizers/icons/switch1.jpg")).convert()
         self.outputs = []
 
     def update(self):
@@ -262,7 +270,7 @@ class Switch(Device):
         """ Clear wires lists after removing switch """
         self.wires['wires'] = []
         self.wires['wires_started'] = []
-        
+
 class Knot(Gate):
     """ Gate represents logical Negation """
     def __init__(self, simulator):

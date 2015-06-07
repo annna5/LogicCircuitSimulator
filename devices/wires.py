@@ -1,5 +1,7 @@
 """ Module with class Wire """
 import pygame
+import sys
+sys.path.append('..')
 
 class Wire(object):
     """ Class represents wire object """
@@ -21,7 +23,7 @@ class Wire(object):
     def draw(self, screen):
         """ Draw line between two devices """
         st_pos = self.start_gate.wire_begin_pos()
-        gate_index = self.end_gate.inputs.index(self.start_gate)
+        gate_index = self.end_gate.inputs.index(self.start_gate)%2
         end_pos = (self.end_gate.wire_end_pos())[gate_index]
         pygame.draw.line(screen, self.BLUE, st_pos, end_pos, 4)
 
